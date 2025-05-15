@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniVerde - Perguntas Frequentes</title>
+    <style>
+        /* Estilos do Menu Lateral */
+        .menu-lateral {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            overflow-y: auto;
+            background: #010208;
+            z-index: 1000;
+            transition: all 0.4s ease;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-lateral.aberto {
+            right: 0;
+        }
+
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            cursor: pointer;
+            background: #2dc603;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: #18ba02;
+            transform: scale(1.05);
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 4px 0;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle.aberto span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .menu-toggle.aberto span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.aberto span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        .menu-conteudo {
+            padding: 80px 20px 20px;
+            height: 100%;
+        }
+
+        .menu-lista {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            margin-bottom: 10px;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .menu-link:hover, .menu-link.ativo {
+            background: #2dc603;
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .menu-link i {
+            margin-right: 15px;
+            font-size: 1.3rem;
+            width: 25px;
+            text-align: center;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .menu-overlay.visivel {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        @media (max-width: 768px) {
+            .menu-lateral {
+                width: 250px;
+                right: -250px;
+            }
+        }
+
+        /* Estilos da Página */
+        body {
+            background-color: #fff;
+            color: #333;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: white;
+            color: #333;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            color: #2dc603;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        section {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            color: #2dc603;
+            border-bottom: 2px solid #2dc603;
+            padding-bottom: 10px;
+        }
+
+        .faq-item {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(45, 198, 3, 0.3);
+        }
+
+        .faq-item h3 {
+            color: #2dc603;
+            margin-top: 0;
+        }
+
+        footer {
+            background-color: #33CC33;
+            color: whitesmoke;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <img src="UniVerde Logo Páginas.png" alt="Univerde Logo Páginas" class="logo" />
+    </header>
+
+    <!-- Menu Lateral -->
+    <div class="menu-toggle" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <nav class="menu-lateral" id="menuLateral">
+        <div class="menu-conteudo">
+            <ul class="menu-lista">
+                <li class="menu-item">
+                    <a href="index.html" class="menu-link">
+                        <i class="fas fa-home"></i> Início
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Videos.html" class="menu-link">
+                        <i class="fas fa-video"></i> Vídeos
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Educacao.html" class="menu-link">
+                        <i class="fas fa-book"></i> Conteúdos Educativos
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Pontos.html" class="menu-link">
+                        <i class="fas fa-map-marker-alt"></i> Pontos de Coleta
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Ongs.html" class="menu-link">
+                        <i class="fas fa-hands-helping"></i> ONGs
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Materiais.html" class="menu-link">
+                        <i class="fas fa-recycle"></i> Materiais Recicláveis
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="residuos-comuns.html" class="menu-link">
+                        <i class="fas fa-trash-alt"></i> Resíduos Comuns
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="residuos-especiais.html" class="menu-link">
+                        <i class="fas fa-biohazard"></i> Resíduos Especiais
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Como Reutilizar Materiais.html" class="menu-link">
+                        <i class="fas fa-lightbulb"></i> Como Reutilizar
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Calculadora.html" class="menu-link">
+                        <i class="fas fa-calculator"></i> Calculadora
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Noticias.html" class="menu-link">
+                        <i class="fas fa-newspaper"></i> Notícias sobre Sustentabilidade
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Perguntas.html" class="menu-link ativo">
+                        <i class="fas fa-question-circle"></i> Perguntas Frequentes
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section>
+            <h2><i class="fas fa-question-circle"></i> Perguntas Frequentes</h2>
+
+            <div class="faq-item">
+                <h3>1. O que é o site UniVerde?</h3>
+                <p>O Univerde é um espaço dedicado ao desenvolvimento acadêmico, 
+                    onde o conhecimento floresce em harmonia com a sustentabilidade.
+                    Mais do que um site, é uma iniciativa que une ciência, educação
+                    e consciência ambiental, promovendo reflexões e soluções para um
+                    futuro mais verde e equilibrado.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>2. Posso descartar papel higiênico usado na reciclagem?</h3>
+                <p>Não. Papéis contaminados com resíduos orgânicos, como papel higiênico usado, não são recicláveis e devem ser descartados no lixo comum.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>3. Onde posso descartar pilhas e baterias usadas?</h3>
+                <p>Pilhas e baterias são resíduos especiais e devem ser descartadas em pontos de coleta específicos. Consulte os locais disponíveis na sua cidade para o descarte adequado.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>4. É necessário separar o lixo reciclável do orgânico?</h3>
+                <p>Sim. Separar o lixo reciclável do orgânico facilita o processo de reciclagem e evita a
+                contaminação dos materiais recicláveis.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>5. Preciso lavar as embalagens antes de reciclá-las?</h3>
+                <p>Sim. É importante higienizar as embalagens para evitar contaminação dos 
+                    materiais recicláveis. Um enxágue rápido já é suficiente para remover resíduos.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>6. Porque devemos reciclar?</h3>
+                <p>Assinado em 2015 por 195 países membros da Convenção da ONU sobre Mudança 
+                    do Clima, o Acordo de Paris tem como objetivo limitar o aquecimento 
+                    global a no máximo 2°C acima dos níveis pré-industriais.</p>
+                <p>E de acordo com o texto final do documento, a reciclagem é uma das ferramentas 
+                    mais importantes para alcançar essa meta. Mas como assim, Recicla? 
+                    O que tem a ver reciclagem com aquecimento global?</p>
+                <p>De saída, a fabricação de materiais reciclados consome menos energia e, 
+                    portanto, emite menos gases de efeito estufa do que a produção de matérias-primas virgens.</p>
+                <p>Além disso, a reciclagem reduz o volume de resíduos enviados para os aterros 
+                    sanitários, o que também contribui para a redução das emissões desses gases, 
+                    diretamente responsáveis pelo aquecimento global.</p>
+                <p>Ou seja, a reciclagem do lixo evita uma parte significativa dos processos 
+                    de produção da indústria moderna.</p>
+                <p>Portanto, ao separar o lixo em dois (comum x reciclável) você ajuda diretamente 
+                    no combate ao aquecimento global.</p>
+                <p>Por isso, a gente gosta sempre de dizer que cada um de nós carrega uma 
+                    responsabilidade histórica e cada gesto, por mais simples que pareça, faz a diferença.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>7. Como descartar eletrônicos em São Paulo?</h3>
+                <p>Se vai na tomada ou usa pilha e bateria é lixo eletrônico.</p>
+                <p>Entram na categoria de lixo eletrônico: geladeiras e freezers, 
+                    microondas e cafeteiras, torradeiras e ventiladores, computadores e 
+                    celulares, controles remotos e cabos, chapinhas e secadores de cabelo, 
+                    brinquedos infantis, CDs e DVDs, entre outros exemplos.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>8. O que é EcoPonto?</h3>
+                <p>EcoPontos são espaços onde os paulistanos podem descartar resíduos 
+                    gratuitamente em caçambas separadas para cada tipo de material.</p>
+                <p>Atualmente, a Prefeitura disponibiliza mais de 100 unidades instaladas 
+                    em todas as regiões da cidade, com atendimento diário e gratuito.</p>
+                <p>O horário de funcionamento é de segunda a sábado das 6h às 20h e aos 
+                    domingos e feriados das 6h às 18h.</p>
+                <p>O que pode descartar no Ecoponto em SP: pequenos volumes de entulho 
+                    (até 1 m³), grandes objetos (móveis, sofás, etc.), podas de árvore e 
+                    resíduos recicláveis em geral, como vidro, plástico e papel.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>9. Qual a importância da sustentabilidade nas universidades e escolas?</h3>
+                <p>Instituições de ensino formam cidadãos conscientes. Ao integrar a 
+                    sustentabilidade ao currículo e às práticas do dia a dia, elas 
+                    estimulam o pensamento crítico e a inovação, preparando jovens para 
+                    enfrentar os desafios ambientais com responsabilidade.</p>
+            </div>
+                        
+            <div class="faq-item">
+                <h3>10. Como a tecnologia pode ajudar a sustentabilidade?</h3>
+                <p>Tecnologias verdes, como energia solar, sistemas 
+                    inteligentes de irrigação, transporte elétrico e 
+                    aplicativos de monitoramento ambiental, ajudam a 
+                    reduzir impactos, otimizar recursos e criar soluções 
+                    mais eficientes e ecológicas.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 UniVerde | Desenvolvido por Felipe Lana Santos RA: R217043 | Gustavo Lisboa de Jesus RA: H70ADJ0 |
+            Igor da Conceição RA: H745179 | Petherson Andrey Sabino RA: R269HE5 | Ruan Bouças Cacovichi RA: R664244 |
+        </p>
+    </footer>
+
+    <!-- JavaScript para controle do menu -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const menuLateral = document.getElementById('menuLateral');
+            const menuOverlay = document.getElementById('menuOverlay');
+            
+            menuToggle.addEventListener('click', function() {
+                this.classList.toggle('aberto');
+                menuLateral.classList.toggle('aberto');
+                menuOverlay.classList.toggle('visivel');
+            });
+            
+            menuOverlay.addEventListener('click', function() {
+                menuToggle.classList.remove('aberto');
+                menuLateral.classList.remove('aberto');
+                this.classList.remove('visivel');
+            });
+            
+            const menuLinks = document.querySelectorAll('.menu-link');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    menuToggle.classList.remove('aberto');
+                    menuLateral.classList.remove('aberto');
+                    menuOverlay.classList.remove('visivel');
+                });
+            });
+        });
+    </script>

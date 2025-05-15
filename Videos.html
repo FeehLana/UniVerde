@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniVerde - Vídeos</title>
+    <style>
+        /* Estilos do Menu Lateral (do primeiro código) */
+        .menu-lateral {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            overflow-y: auto;
+            background: #010208;
+            z-index: 1000;
+            transition: all 0.4s ease;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-lateral.aberto {
+            right: 0;
+        }
+
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            cursor: pointer;
+            background: #2dc603;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: #18ba02;
+            transform: scale(1.05);
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 4px 0;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle.aberto span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .menu-toggle.aberto span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.aberto span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        .menu-conteudo {
+            padding: 80px 20px 20px;
+            height: 100%;
+        }
+
+        .menu-lista {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            margin-bottom: 10px;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .menu-link:hover, .menu-link.ativo {
+            background: #2dc603;
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .menu-link i {
+            margin-right: 15px;
+            font-size: 1.3rem;
+            width: 25px;
+            text-align: center;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .menu-overlay.visivel {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        @media (max-width: 768px) {
+            .menu-lateral {
+                width: 250px;
+                right: -250px;
+            }
+        }
+
+        /* Estilos da Página de Vídeos (ajustado para o tema verde/escuro) */
+        body {
+            background-color: #fff;
+            color: #333;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: white;
+            color: #333;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            color: #2dc603; /* Verde do menu */
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .sobre-ongs-header h2 {
+            color: #2dc603; /* Verde do menu */
+            margin-bottom: 10px;
+        }
+
+        .destaque-verde {
+            height: 3px;
+            background-color: #2dc603; /* Verde do menu */
+            width: 100px;
+            margin: 10px auto;
+        }
+
+        .destaque-texto {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #555;
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .video-item {
+            text-align: center;
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .video-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(45, 198, 3, 0.3); /* Verde do menu com transparência */
+        }
+
+        iframe {
+            border-radius: 8px;
+            width: 100%;
+            height: 215px;
+            border: none;
+        }
+
+        .video-item p {
+            margin-top: 10px;
+            color: #2dc603; /* Verde do menu */
+            font-weight: bold;
+        }
+
+        footer {
+            background-color: #33CC33;
+            color: whitesmoke;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <img src="UniVerde Logo Páginas.png" alt="Univerde Logo Páginas" class="logo" />
+    </header>
+
+    <!-- Menu Lateral (do primeiro código) -->
+    <div class="menu-toggle" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <nav class="menu-lateral" id="menuLateral">
+        <div class="menu-conteudo">
+            <ul class="menu-lista">
+                <li class="menu-item">
+                    <a href="index.html" class="menu-link">
+                        <i class="fas fa-home"></i> Início
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Videos.html" class="menu-link ativo">
+                        <i class="fas fa-video"></i> Vídeos
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Educacao.html" class="menu-link">
+                        <i class="fas fa-book"></i> Conteúdos Educativos
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Pontos.html" class="menu-link">
+                        <i class="fas fa-map-marker-alt"></i> Pontos de Coleta
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Ongs.html" class="menu-link">
+                        <i class="fas fa-hands-helping"></i> ONGs
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Materiais.html" class="menu-link">
+                        <i class="fas fa-recycle"></i> Materiais Recicláveis
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="residuos-comuns.html" class="menu-link">
+                        <i class="fas fa-trash-alt"></i> Resíduos Comuns
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="residuos-especiais.html" class="menu-link">
+                        <i class="fas fa-biohazard"></i> Resíduos Especiais
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Como Reutilizar Materiais.html" class="menu-link">
+                        <i class="fas fa-lightbulb"></i> Como Reutilizar
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Calculadora.html" class="menu-link">
+                        <i class="fas fa-calculator"></i> Calculadora
+                    </a>
+                </li>
+                                <li class="menu-item">
+                    <a href="Noticias.html" class="menu-link">
+                        <i class="fas fa-newspaper"></i> Notícias sobre Sustentabilidade
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Perguntas.html" class="menu-link">
+                        <i class="fas fa-question-circle"></i> Perguntas Frequentes
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section class="sobre-ongs">
+            <div class="sobre-ongs-header">
+                <h2><i class="fas fa-play-circle"></i>Vídeos - UniVerde</h2>
+                <p>Aqui, você encontrará uma seleção de vídeos inspiradores e educativos
+                     sobre práticas sustentáveis que podem transformar o seu dia a dia 
+                     e o planeta. Com dicas práticas sobre reciclagem, consumo consciente, 
+                     estilo de vida verde e muito mais, nossa missão é oferecer soluções 
+                     simples e acessíveis para um futuro mais sustentável.</p>
+                <p>Cada vídeo foi escolhido com cuidado para ajudar você a repensar
+                     hábitos cotidianos e descobrir novas formas de contribuir para 
+                     um mundo mais equilibrado e responsável. Acredite, pequenas 
+                     mudanças podem fazer uma grande diferença!</p>
+                <p>Assista aos vídeos, compartilhe ideias e junte-se a nós na jornada
+                     por um planeta mais saudável e harmonioso.</p>
+                <div class="destaque-verde"></div>
+            </div>
+
+            <div class="videos-grid">
+                <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/XrCdZy9Mvb0?si=5TemQIfvggU3_nGg" title="O que é sustentabilidade?" frameborder="0" allowfullscreen></iframe>
+                    <p>O que é sustentabilidade?</p>
+                </div>
+                <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/ITur0JNJZos?si=C4yjquik2MMCY_6E" title="A Importância da Reciclagem" frameborder="0" allowfullscreen></iframe>
+                    <p>A Importância da Reciclagem</p>
+                </div>
+                <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/kp8itPVd8VQ?si=F0siHNt2mLCgFCBY" title="O que é Impacto Ambiental?" frameborder="0" allowfullscreen></iframe>
+                    <p>O que é Impacto Ambiental?</p>
+                </div>
+                <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/OQ5jpiKzNqg?si=Pz2NjhJnRIP-io3L" title="O que é Reciclagem?" frameborder="0" allowfullscreen></iframe>
+                    <p>O que é Reciclagem?</p>
+                </div>
+                <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/IfJ1z6ahgzk?si=4zWD0ia0P_ZY7exu" title="Cores da coleta seletiva" frameborder="0" allowfullscreen></iframe>
+                    <p>Cores da coleta seletiva</p>
+                </div>
+                <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/qu_YYw9mEj8?si=h6k9XVPPEfBAGZEs" title="Como cuidar do meio ambiente" frameborder="0" allowfullscreen></iframe>
+                    <p>Como cuidar do meio ambiente</p>
+                </div>
+                <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/QYc-fLJHb3E" title="10 Dicas de Sustentabilidade para o Seu Dia-a-Dia" frameborder="0" allowfullscreen></iframe>
+                    <p>10 Dicas de Sustentabilidade para o Seu Dia-a-Dia</p>
+                </div>
+                <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/2hCMd7U1FOU" title="5 Dicas Fáceis de Sustentabilidade para o Seu Dia a Dia" frameborder="0" allowfullscreen></iframe>
+                    <p>5 Dicas Fáceis de Sustentabilidade para o Seu Dia a Dia</p>
+                </div>
+                <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/8A1iew2i530" title="5 Dicas de Atitudes Sustentáveis no Dia a Dia" frameborder="0" allowfullscreen></iframe>
+                    <p>5 Dicas de Atitudes Sustentáveis no Dia a Dia</p>
+                </div>
+                <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/2z4vnXpO4nk" title="Lala Deheinzelin: Criar Estilos de Vida Sustentáveis" frameborder="0" allowfullscreen></iframe>
+                    <p>Lala Deheinzelin: Criar Estilos de Vida Sustentáveis</p>
+                </div>
+                <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/78ViguhyTwQ" title="Zé Cláudio Ribeiro: Matar árvores é assassinato" frameborder="0" allowfullscreen></iframe>
+                    <p>Zé Cláudio Ribeiro: Matar árvores é assassinato</p>
+                </div>
+                <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/_t223swPVlA" title="André Trigueiro: Repensar o consumo" frameborder="0" allowfullscreen></iframe>
+                    <p>André Trigueiro: Repensar o consumo</p>
+                </div>                
+               <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/fGVk-1NC_pQ" title="Como fazer papel reciclado artesanal" frameborder="0" allowfullscreen></iframe>
+                    <p>Utensílios para fazer com a reciclagem</p>
+                </div>
+                <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/ypBqGWIfOqA" title="Dicas criativas para reutilizar produtos recicláveis" frameborder="0" allowfullscreen></iframe>
+                    <p>Dicas criativas para reutilizar produtos recicláveis</p>
+                </div>
+                <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/gdrMwkFo6Ao" title="Brinquedos com material reciclado" frameborder="0" allowfullscreen></iframe>
+                    <p>Brinquedos feitos com reciclagem</p>
+                </div>
+                <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/RzyGd6NwZks" title="Como fazer papel reciclado" frameborder="0" allowfullscreen></iframe>
+                    <p>Como fazer papel reciclado</p>
+                </div>
+                <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/K_qRnP-r53w" title="Reaproveitando utensílios de cozinha" frameborder="0" allowfullscreen></iframe>
+                    <p>Reaproveitando utensílios de cozinha</p>
+                </div>
+                <div class="video-item">
+                    <iframe width="100%" height="215" src="https://www.youtube.com/embed/sbt786OjK_A" title="Como fazer cola caseira" frameborder="0" allowfullscreen></iframe>
+                    <p>Como fazer cola caseira ecológica</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 UniVerde | Desenvolvido por Felipe Lana Santos RA: R217043 | Gustavo Lisboa de Jesus RA: H70ADJ0 |
+            Igor da Conceição RA: H745179 | Petherson Andrey Sabino RA: R269HE5 | Ruan Bouças Cacovichi RA: R664244 |
+        </p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const menuLateral = document.getElementById('menuLateral');
+            const menuOverlay = document.getElementById('menuOverlay');
+            
+            menuToggle.addEventListener('click', function() {
+                this.classList.toggle('aberto');
+                menuLateral.classList.toggle('aberto');
+                menuOverlay.classList.toggle('visivel');
+            });
+            
+            menuOverlay.addEventListener('click', function() {
+                menuToggle.classList.remove('aberto');
+                menuLateral.classList.remove('aberto');
+                this.classList.remove('visivel');
+            });
+            
+            const menuLinks = document.querySelectorAll('.menu-link');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    menuToggle.classList.remove('aberto');
+                    menuLateral.classList.remove('aberto');
+                    menuOverlay.classList.remove('visivel');
+                });
+            });
+            
+        });
+    </script>
+</body>
+</html>

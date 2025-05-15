@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UniVerde - Resíduos Comuns</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f1fdf5;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #2dc603;
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: white;
+      text-align: center;
+    }
+
+    .menu-lateral {
+      position: fixed;
+      top: 0;
+      right: -300px;
+      width: 300px;
+      height: 100vh;
+      overflow-y: auto;
+      background: #010208;
+      z-index: 1000;
+      transition: all 0.4s ease;
+      box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .menu-lateral.aberto {
+      right: 0;
+    }
+
+    .menu-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1001;
+      cursor: pointer;
+      background: #2dc603;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+
+    .menu-toggle:hover {
+      background: #18ba02;
+      transform: scale(1.05);
+    }
+
+    .menu-toggle span {
+      display: block;
+      width: 25px;
+      height: 3px;
+      background: white;
+      margin: 4px 0;
+      transition: all 0.3s ease;
+    }
+
+    .menu-toggle.aberto span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .menu-toggle.aberto span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .menu-toggle.aberto span:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    .menu-conteudo {
+      padding: 80px 20px 20px;
+      height: 100%;
+    }
+
+    .menu-lista {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .menu-item {
+      margin-bottom: 10px;
+    }
+
+    .menu-link {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
+    }
+
+    .menu-link:hover, .menu-link.ativo {
+      background: #2dc603;
+      color: white;
+      transform: translateX(-5px);
+    }
+
+    .menu-link i {
+      margin-right: 15px;
+      font-size: 1.3rem;
+      width: 25px;
+      text-align: center;
+    }
+
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .menu-overlay.visivel {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    @media (max-width: 768px) {
+      .menu-lateral {
+        width: 250px;
+        right: -250px;
+      }
+    }
+
+    main {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .descricao {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+
+    .card h3 {
+      font-size: 1.3rem;
+      color: #2dc603;
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card p {
+      font-size: 1rem;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .card p strong {
+      color: #333;
+    }
+
+    footer {
+      background-color: #2dc603;
+      color: white;
+      text-align: center;
+      padding: 1.5rem;
+      margin-top: 3rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="UniVerde Logo PáginasB.png" alt="Univerde Logo PáginasB" class="logo" />
+  </header>
+
+  <!-- Botão do Menu -->
+  <div class="menu-toggle" id="menuToggle">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <!-- Overlay -->
+  <div class="menu-overlay" id="menuOverlay"></div>
+
+  <!-- Menu Lateral -->
+  <nav class="menu-lateral" id="menuLateral">
+    <div class="menu-conteudo">
+      <ul class="menu-lista">
+        <li class="menu-item">
+          <a href="index.html" class="menu-link">
+              <i class="fas fa-home"></i> Início
+          </a>
+      </li>
+      <li class="menu-item">
+          <a href="Videos.html" class="menu-link">
+              <i class="fas fa-video"></i> Vídeos
+          </a>
+      </li>
+      <li class="menu-item">
+          <a href="Educacao.html" class="menu-link">
+              <i class="fas fa-book"></i> Conteúdos Educativos
+          </a>
+      </li>
+      <li class="menu-item">
+          <a href="Pontos.html" class="menu-link">
+              <i class="fas fa-map-marker-alt"></i> Pontos de Coleta
+          </a>
+      </li>
+      <li class="menu-item">
+          <a href="Ongs.html" class="menu-link">
+              <i class="fas fa-hands-helping"></i> ONGs
+          </a>
+      </li>
+      <li class="menu-item">
+          <a href="Materiais.html" class="menu-link">
+              <i class="fas fa-recycle"></i> Materiais Recicláveis
+          </a>
+      </li>
+      <li class="menu-item">
+          <a href="residuos-comuns.html" class="menu-link">
+              <i class="fas fa-trash-alt"></i> Resíduos Comuns
+          </a>
+      </li>
+      <li class="menu-item">
+          <a href="residuos-especiais.html" class="menu-link">
+              <i class="fas fa-biohazard"></i> Resíduos Especiais
+          </a>
+      </li>
+      <li class="menu-item">
+          <a href="Como Reutilizar Materiais.html" class="menu-link">
+              <i class="fas fa-lightbulb"></i> Como Reutilizar
+          </a>
+      </li>
+      <li class="menu-item">
+          <a href="Calculadora.html" class="menu-link">
+              <i class="fas fa-calculator"></i> Calculadora
+          </a>
+      </li>
+      <li class="menu-item">
+          <a href="Noticias.html" class="menu-link">
+              <i class="fas fa-newspaper"></i> Notícias sobre Sustentabilidade
+          </a>
+      </li>
+      <li class="menu-item">
+          <a href="Perguntas.html" class="menu-link">
+              <i class="fas fa-question-circle"></i> Perguntas Frequentes
+          </a>
+      </li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <main>
+        <div class="descricao">
+          <p>Resíduos comuns são aqueles gerados no dia a dia que <strong>não são perigosos</strong> e podem ser descartados no lixo regular, desde que não sejam recicláveis. Confira os principais tipos:</p>
+        </div>
+      
+        <section class="cards-grid">
+          <!-- Resíduos não-recicláveis (comuns) -->
+          <div class="card">
+            <h3><i class="fas fa-trash"></i> Lixo Orgânico</h3>
+            <p><strong>Exemplos:</strong> Restos de alimentos, cascas de frutas/legumes, borra de café, folhas secas.</p>
+            <p><strong>Descarte correto:</strong> Use lixeiras comuns ou composteira (para reduzir o impacto).</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-toilet-paper"></i> Papel Higiênico e Lenços</h3>
+            <p><strong>Exemplos:</strong> Lenços usados, guardanapos sujos, fraldas descartáveis, absorventes.</p>
+            <p><strong>Descarte correto:</strong> Lixo comum (não são recicláveis por contaminação).</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-sticky-note"></i> Papel Não-Reciclável</h3>
+            <p><strong>Exemplos:</strong> Papel carbono, papel plastificado, papel higiênico, fotografias.</p>
+            <p><strong>Descarte correto:</strong> Lixo comum (não pode ser reciclado).</p>
+          </div>
+        </section>
+      
+        <section class="cards-grid">
+          <div class="card">
+            <h3><i class="fas fa-cookie-bite"></i> Embalagens Sujas</h3>
+            <p><strong>Exemplos:</strong> Embalagens de alimentos com gordura (pizza, fast-food), pacotes de salgadinho.</p>
+            <p><strong>Descarte correto:</strong> Lave para reciclar ou descarte no lixo comum se não for possível limpar.</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-paint-roller"></i> Resíduos de Limpeza Doméstica</h3>
+            <p><strong>Exemplos:</strong> Esponjas de lavar louça, panos sujos, esponjas de aço, trapos.</p>
+            <p><strong>Descarte correto:</strong> Lixo comum (não são recicláveis).</p>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-mug-hot"></i> Cerâmica e Vidros Quebrados</h3>
+            <p><strong>Exemplos:</strong> Copos quebrados, pratos de cerâmica, espelhos, lâmpadas incandescentes.</p>
+            <p><strong>Descarte correto:</strong> Embrulhe em jornal ou papelão e descarte no lixo comum (evite acidentes).</p>
+          </div>
+        </section>
+      
+        <div class="descricao" style="margin-top: 2rem;">
+          <p><strong>Observação:</strong> Materiais como plástico, papel limpo, vidro e metais são <strong>recicláveis</strong> e devem ser separados. Veja a página <a href="Materiais.html" style="color: #2dc603;">Materiais Recicláveis</a> para mais detalhes.</p>
+        </div>
+      </main>
+
+  </main>
+
+  <footer>
+        <p>© 2025 UniVerde | Desenvolvido por Felipe Lana Santos RA: R217043 | Gustavo Lisboa de Jesus RA: H70ADJ0 |
+            Igor da Conceição RA: H745179 | Petherson Andrey Sabino RA: R269HE5 | Ruan Bouças Cacovichi RA: R664244 |
+        </p>
+  </footer>
+
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const menuLateral = document.getElementById('menuLateral');
+    const menuLinks = document.querySelectorAll('.menu-link');
+
+    menuToggle.addEventListener('click', () => {
+      menuToggle.classList.toggle('aberto');
+      menuLateral.classList.toggle('aberto');
+      menuOverlay.classList.toggle('visivel');
+    });
+
+    menuOverlay.addEventListener('click', () => {
+      menuToggle.classList.remove('aberto');
+      menuLateral.classList.remove('aberto');
+      menuOverlay.classList.remove('visivel');
+    });
+
+    menuLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        menuToggle.classList.remove('aberto');
+        menuLateral.classList.remove('aberto');
+        menuOverlay.classList.remove('visivel');
+      });
+
+      if (link.href === window.location.href || link.href === window.location.origin + window.location.pathname) {
+        link.classList.add('ativo');
+      }
+    });
+  </script>
+</body>
+</html>
+s

@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniVerde - Materiais Recicláveis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --verde-escuro: #2dc603; /* Verde claro do menu */
+            --verde-claro: #2dc603; /* Verde claro do menu */
+            --cinza-claro: #f5f5f5;
+            --branco: #ffffff;
+            --azul-info: #2196F3;
+            --laranja-alerta: #ff9800;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--branco);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--branco);
+            color: #333;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: var(--verde-claro);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .intro {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background-color: var(--cinza-claro);
+            border-radius: 8px;
+        }
+        
+        .intro p {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .material-section {
+            margin: 40px 0;
+        }
+        
+        h2 {
+            color: var(--verde-claro);
+            border-bottom: 2px solid var(--verde-claro);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        h2 i {
+            margin-right: 10px;
+        }
+        
+        .material-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .material-card {
+            background-color: var(--branco);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .material-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(45, 198, 3, 0.2);
+        }
+        
+        .material-header {
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .material-header i {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+        
+        .material-content {
+            padding: 20px;
+        }
+        
+        .material-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .material-item:last-child {
+            border-bottom: none;
+        }
+        
+        .material-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Estilos específicos para cada tipo de card */
+        .reciclavel .material-header {
+            background-color: var(--verde-claro);
+        }
+        .reciclavel .material-item i {
+            color: var(--verde-claro);
+        }
+        
+        .nao-reciclavel .material-header {
+            background-color: var(--laranja-alerta);
+        }
+        .nao-reciclavel .material-item i {
+            color: var(--laranja-alerta);
+        }
+        
+        .informacoes .material-header {
+            background-color: var(--azul-info);
+        }
+        .informacoes .material-item i {
+            color: var(--azul-info);
+        }
+        
+        .tips-section {
+            background-color: var(--cinza-claro);
+            padding: 30px;
+            border-radius: 8px;
+            margin: 40px 0;
+        }
+        
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .tip-card {
+            background-color: var(--branco);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .tip-card i {
+            color: var(--verde-claro);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        
+        footer {
+            background-color: #33CC33;
+            color: whitesmoke;
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+
+        /* Estilos do Menu Lateral - Atualizado */
+        .menu-lateral {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            overflow-y: auto;
+            background: #010208;
+            z-index: 1000;
+            transition: all 0.4s ease;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-lateral.aberto {
+            right: 0;
+        }
+
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            cursor: pointer;
+            background: #2dc603;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: #18ba02;
+            transform: scale(1.05);
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 4px 0;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle.aberto span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .menu-toggle.aberto span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.aberto span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        .menu-conteudo {
+            padding: 80px 20px 20px;
+            height: 100%;
+        }
+
+        .menu-lista {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            margin-bottom: 10px;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .menu-link:hover, .menu-link.ativo {
+            background: #2dc603;
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .menu-link i {
+            margin-right: 15px;
+            font-size: 1.3rem;
+            width: 25px;
+            text-align: center;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .menu-overlay.visivel {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        @media (max-width: 768px) {
+            .menu-lateral {
+                width: 250px;
+                right: -250px;
+            }
+            .material-grid, .tips-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Lateral -->
+    <div class="menu-toggle" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <nav class="menu-lateral" id="menuLateral">
+        <div class="menu-conteudo">
+            <ul class="menu-lista">
+                <li class="menu-item">
+                    <a href="index.html" class="menu-link">
+                        <i class="fas fa-home"></i> Início
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Videos.html" class="menu-link">
+                        <i class="fas fa-video"></i> Vídeos
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Educacao.html" class="menu-link">
+                        <i class="fas fa-book"></i> Conteúdos Educativos
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Pontos.html" class="menu-link">
+                        <i class="fas fa-map-marker-alt"></i> Pontos de Coleta
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Ongs.html" class="menu-link">
+                        <i class="fas fa-hands-helping"></i> ONGs
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Materiais.html" class="menu-link ativo">
+                        <i class="fas fa-recycle"></i> Materiais Recicláveis
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="residuos-comuns.html" class="menu-link">
+                        <i class="fas fa-trash-alt"></i> Resíduos Comuns
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="residuos-especiais.html" class="menu-link">
+                        <i class="fas fa-biohazard"></i> Resíduos Especiais
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Como Reutilizar Materiais.html" class="menu-link">
+                        <i class="fas fa-lightbulb"></i> Como Reutilizar
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Calculadora.html" class="menu-link">
+                        <i class="fas fa-calculator"></i> Calculadora
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Noticias.html" class="menu-link">
+                        <i class="fas fa-newspaper"></i> Notícias sobre Sustentabilidade
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Perguntas.html" class="menu-link">
+                        <i class="fas fa-question-circle"></i> Perguntas Frequentes
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <header>
+        <div class="container">
+            <img src="UniVerde Logo Páginas.png" alt="Univerde Logo Inicial" class="logo" />
+
+        </div>
+    </header>
+    
+    <main class="container">
+        <section class="intro">
+            <h2>Por que reciclar?</h2>
+            <p>A reciclagem transforma materiais usados em novos produtos, economizando recursos naturais e reduzindo a poluição. Separar corretamente é o primeiro passo para um mundo mais sustentável.</p>
+        </section>
+        
+        <section class="material-section">
+            <h2><i class="fas fa-newspaper"></i> Papel e Papelão</h2>
+            <div class="material-grid">
+                <div class="material-card reciclavel">
+                    <div class="material-header">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Recicláveis</h3>
+                    </div>
+                    <div class="material-content">
+                        <div class="material-item">
+                            <i class="fas fa-check"></i>
+                            <span>Jornais e revistas</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-check"></i>
+                            <span>Caixas de papelão</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-check"></i>
+                            <span>Folhas de caderno</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-check"></i>
+                            <span>Envelopes</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="material-card nao-reciclavel">
+                    <div class="material-header">
+                        <i class="fas fa-times-circle"></i>
+                        <h3>Não Recicláveis</h3>
+                    </div>
+                    <div class="material-content">
+                        <div class="material-item">
+                            <i class="fas fa-times"></i>
+                            <span>Papel higiênico usado</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-times"></i>
+                            <span>Guardanapos engordurados</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-times"></i>
+                            <span>Papel carbono</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-times"></i>
+                            <span>Adesivos e etiquetas</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="material-card informacoes">
+                    <div class="material-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h3>Informações</h3>
+                    </div>
+                    <div class="material-content">
+                        <div class="material-item">
+                            <i class="fas fa-recycle"></i>
+                            <span>Remova clipes e grampos</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-trash-alt"></i>
+                            <span>Não amasse demais o papel</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-box"></i>
+                            <span>Separe por tipo (jornal, papel branco, etc.)</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-tint"></i>
+                            <span>Evite papéis muito sujos ou molhados</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="material-section">
+            <h2><i class="fas fa-bottle-water"></i> Plásticos</h2>
+            <div class="material-grid">
+                <div class="material-card reciclavel">
+                    <div class="material-header">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Recicláveis</h3>
+                    </div>
+                    <div class="material-content">
+                        <div class="material-item">
+                            <i class="fas fa-check"></i>
+                            <span>Garrafas PET</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-check"></i>
+                            <span>Embalagens de produtos</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-check"></i>
+                            <span>Sacos e sacolas plásticas</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-check"></i>
+                            <span>Utensílios plásticos</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="material-card nao-reciclavel">
+                    <div class="material-header">
+                        <i class="fas fa-times-circle"></i>
+                        <h3>Não Recicláveis</h3>
+                    </div>
+                    <div class="material-content">
+                        <div class="material-item">
+                            <i class="fas fa-times"></i>
+                            <span>Embalagens metalizadas</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-times"></i>
+                            <span>Esponjas de cozinha</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-times"></i>
+                            <span>Cabos de panela</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-times"></i>
+                            <span>Fraldas descartáveis</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="material-card informacoes">
+                    <div class="material-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h3>Informações</h3>
+                    </div>
+                    <div class="material-content">
+                        <div class="material-item">
+                            <i class="fas fa-recycle"></i>
+                            <span>Lave as embalagens antes</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-compress-alt"></i>
+                            <span>Amasse para reduzir volume</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-trash-alt"></i>
+                            <span>Remova rótulos quando possível</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Verifique o símbolo de reciclagem</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="material-section">
+            <h2><i class="fas fa-glass-whiskey"></i> Vidros</h2>
+            <div class="material-grid">
+                <div class="material-card reciclavel">
+                    <div class="material-header">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Recicláveis</h3>
+                    </div>
+                    <div class="material-content">
+                        <div class="material-item">
+                            <i class="fas fa-check"></i>
+                            <span>Garrafas de bebidas</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-check"></i>
+                            <span>Potes de alimentos</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-check"></i>
+                            <span>Frascos de perfumes</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-check"></i>
+                            <span>Vidros transparentes</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="material-card nao-reciclavel">
+                    <div class="material-header">
+                        <i class="fas fa-times-circle"></i>
+                        <h3>Não Recicláveis</h3>
+                    </div>
+                    <div class="material-content">
+                        <div class="material-item">
+                            <i class="fas fa-times"></i>
+                            <span>Espelhos</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-times"></i>
+                            <span>Vidros temperados</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-times"></i>
+                            <span>Lâmpadas</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-times"></i>
+                            <span>Louças e cerâmicas</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="material-card informacoes">
+                    <div class="material-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h3>Informações</h3>
+                    </div>
+                    <div class="material-content">
+                        <div class="material-item">
+                            <i class="fas fa-hand-paper"></i>
+                            <span>Cuidado com cacos cortantes</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-tint"></i>
+                            <span>Lave para remover resíduos</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-box"></i>
+                            <span>Separe por cor (transparente, verde, marrom)</span>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Embrulhe vidros quebrados em jornal</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="tips-section">
+            <h2><i class="fas fa-lightbulb"></i> Dicas para Reciclar Melhor</h2>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <i class="fas fa-trash-alt"></i>
+                    <h3>Lave as embalagens</h3>
+                    <p>Remova resíduos de alimentos para evitar contaminação e mau cheiro nos materiais recicláveis.</p>
+                </div>
+                
+                <div class="tip-card">
+                    <i class="fas fa-box-open"></i>
+                    <h3>Reduza o volume</h3>
+                    <p>Amasse latas e garrafas, dobre papelões para ocupar menos espaço na coleta seletiva.</p>
+                </div>
+                
+                <div class="tip-card">
+                    <i class="fas fa-seedling"></i>
+                    <h3>Separe corretamente</h3>
+                    <p>Divida os materiais em categorias (papel, plástico, vidro, metal) para facilitar a reciclagem.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+        <p>© 2025 UniVerde | Desenvolvido por Felipe Lana Santos RA: R217043 | Gustavo Lisboa de Jesus RA: H70ADJ0 |
+            Igor da Conceição RA: H745179 | Petherson Andrey Sabino RA: R269HE5 | Ruan Bouças Cacovichi RA: R664244 |
+        </p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const menuLateral = document.getElementById('menuLateral');
+            const menuOverlay = document.getElementById('menuOverlay');
+            
+            menuToggle.addEventListener('click', function() {
+                this.classList.toggle('aberto');
+                menuLateral.classList.toggle('aberto');
+                menuOverlay.classList.toggle('visivel');
+            });
+            
+            menuOverlay.addEventListener('click', function() {
+                menuToggle.classList.remove('aberto');
+                menuLateral.classList.remove('aberto');
+                this.classList.remove('visivel');
+            });
+            
+            const menuLinks = document.querySelectorAll('.menu-link');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    menuToggle.classList.remove('aberto');
+                    menuLateral.classList.remove('aberto');
+                    menuOverlay.classList.remove('visivel');
+                });
+            });
+        });
+    </script>
+</body>
+</html>s

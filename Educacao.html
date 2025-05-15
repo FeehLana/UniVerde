@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniVerde - Sustentabilidade</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    /* Estilos do Menu Lateral */
+    .menu-lateral {
+      position: fixed;
+      top: 0;
+      right: -300px;
+      width: 300px;
+      height: 100vh;
+      overflow-y: auto;
+      background: #010208;
+      z-index: 1000;
+      transition: all 0.4s ease;
+      box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .menu-lateral.aberto {
+      right: 0;
+    }
+
+    .menu-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1001;
+      cursor: pointer;
+      background: #2dc603;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .menu-toggle:hover {
+      background: #18ba02;
+      transform: scale(1.05);
+    }
+
+    .menu-toggle span {
+      display: block;
+      width: 25px;
+      height: 3px;
+      background: white;
+      margin: 4px 0;
+      transition: all 0.3s ease;
+    }
+
+    .menu-toggle.aberto span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .menu-toggle.aberto span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .menu-toggle.aberto span:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    .menu-conteudo {
+      padding: 80px 20px 20px;
+      height: 100%;
+    }
+
+    .menu-lista {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .menu-item {
+      margin-bottom: 10px;
+    }
+
+    .menu-link {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
+    }
+
+    .menu-link:hover,
+    .menu-link.ativo {
+      background: #2dc603;
+      color: white;
+      transform: translateX(-5px);
+    }
+
+    .menu-link i {
+      margin-right: 15px;
+      font-size: 1.3rem;
+      width: 25px;
+      text-align: center;
+    }
+
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .menu-overlay.visivel {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    @media (max-width: 768px) {
+      .menu-lateral {
+        width: 250px;
+        right: -250px;
+      }
+    }
+
+    /* Estilos Gerais da Página */
+    body {
+      background-color: #fff;
+      color: #333;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      color: #2dc603;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+
+    section {
+      margin-bottom: 40px;
+    }
+
+    h2 {
+      color: #2dc603;
+      border-bottom: 2px solid #2dc603;
+      padding-bottom: 10px;
+    }
+
+    article {
+      background: #f9f9f9;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    article:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(45, 198, 3, 0.3);
+    }
+
+    h3 {
+      color: #2dc603;
+      margin-top: 0;
+    }
+
+    a[download] {
+      display: inline-block;
+      background-color: #2dc603;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 4px;
+      text-decoration: none;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+
+    a[download]:hover {
+      background-color: #18ba02;
+      transform: translateY(-2px);
+    }
+
+    footer {
+      background-color: #33cc33;
+      color: whitesmoke;
+      text-align: center;
+      padding: 20px;
+      margin-top: 40px;
+    }
+
+    footer p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="UniVerde Logo Páginas.png" alt="Univerde Logo Páginas" class="logo" />
+  </header>
+
+  <!-- Menu Lateral -->
+  <div class="menu-toggle" id="menuToggle">
+    <span></span><span></span><span></span>
+  </div>
+  <div class="menu-overlay" id="menuOverlay"></div>
+  <nav class="menu-lateral" id="menuLateral">
+    <div class="menu-conteudo">
+      <ul class="menu-lista">
+        <li class="menu-item">
+            <a href="index.html" class="menu-link">
+                <i class="fas fa-home"></i> Início
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="Videos.html" class="menu-link">
+                <i class="fas fa-video"></i> Vídeos
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="Educacao.html" class="menu-link ativo">
+                <i class="fas fa-book"></i> Conteúdos Educativos
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="Pontos.html" class="menu-link">
+                <i class="fas fa-map-marker-alt"></i> Pontos de Coleta
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="Ongs.html" class="menu-link">
+                <i class="fas fa-hands-helping"></i> ONGs
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="Materiais.html" class="menu-link">
+                <i class="fas fa-recycle"></i> Materiais Recicláveis
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="residuos-comuns.html" class="menu-link">
+                <i class="fas fa-trash-alt"></i> Resíduos Comuns
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="residuos-especiais.html" class="menu-link">
+                <i class="fas fa-biohazard"></i> Resíduos Especiais
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="Como Reutilizar Materiais.html" class="menu-link">
+                <i class="fas fa-lightbulb"></i> Como Reutilizar
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="Calculadora.html" class="menu-link">
+                <i class="fas fa-calculator"></i> Calculadora
+            </a>
+        </li>
+        <li class="menu-item">
+          <a href="Noticias.html" class="menu-link">
+              <i class="fas fa-newspaper"></i> Notícias sobre Sustentabilidade
+          </a>
+      </li>
+        <li class="menu-item">
+          <a href="Perguntas.html" class="menu-link">
+              <i class="fas fa-question-circle"></i> Perguntas Frequentes
+          </a>
+      </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main>
+    <section>
+      <h2><i class="fas fa-leaf"></i>Conteúdos sobre Sustentabilidade</h2>
+
+      <article>
+        <h3>O que é Sustentabilidade?</h3>
+        <p>Sustentabilidade significa garantir qualidade de vida para esta e as próximas gerações. Envolve ações conscientes no consumo, produção e uso de recursos naturais.</p>
+      </article>
+
+      <article>
+        <h3>Práticas Sustentáveis</h3>
+        <ul>
+          <li>Use lâmpadas de LED e economize energia.</li>
+          <li>Reaproveite água da chuva.</li>
+          <li>Evite plásticos descartáveis.</li>
+          <li>Prefira alimentos orgânicos e de produtores locais.</li>
+          <li>Separe o lixo em casa e no trabalho, e coloque na rua no dia da coleta seletiva em seu bairro.</li>
+          <li>Não jogue lixo no chão. Carregue-o até a lixeira mais próxima. Ensine às crianças dando exemplo.</li>
+          <li>Recicle ou reaprove tudo o que puder.</li>
+          <li>Reduza o consumo, especialmente do que não puder ser reaproveitando ou reciclado.</li>
+          <li>Use transporte público ou bicicleta sempre que possível.</li>
+          <li>Participe de mutirões de limpeza em sua comunidade.</li>
+          <li>Plante árvores e cuide do meio ambiente.</li>
+          <li>Evite o desperdício de alimentos.</li>
+          <li>Compre produtos com menos embalagens.</li>
+          <li>Desligue aparelhos eletrônicos quando não estiverem em uso.</li>
+        </ul>
+        <a href="Guia de Praticas Sustentaveis.pdf" download>Baixar Guia de Práticas Sustentáveis</a>
+      </article>
+
+      <article>
+        <h3>Mudanças Climáticas</h3>
+        <p>As mudanças climáticas são consequências diretas do aquecimento global. Atitudes como 
+            reduzir o consumo de combustíveis fósseis e preservar florestas são essenciais.</p>
+        <a href="Mudanças Climaticas.pdf" download>Baixar Apostila</a>
+      </article>
+
+      <article>
+        <h3>ODS e Agenda 2030</h3>
+        <p>A ONU propôs 17 Objetivos de Desenvolvimento Sustentável que visam erradicar a pobreza, 
+            proteger o meio ambiente e garantir paz e prosperidade.</p>
+        <a href="ODS e Agenda 2030.pdf" download>Baixar Documento</a>
+      </article>
+
+      <article>
+        <h3>Qual a diferença entre Ecologia e Ecologismo?</h3>
+        <p>A ecologia é a ciência que estuda os ecossistemas, isto é, a combinação de espécies 
+            (incluindo o ser humano) e o meio ambiente no qual habitam, assim como as interações
+            entre ele, enquanto que o ecologismo é o movimento sociopolítico que se preocupa 
+            com a proteção da natureza, ou seja, são ações, ideias e campanhas que lutam pela 
+            preservação da natureza baseadas nos estudos da ecologia.</p>
+      </article>
+
+      <article>
+        <h3>Qual a importância dos movimentos ecológicos para o futuro do planeta?</h3>
+        <p>Os movimentos ecológicos têm uma importância crucial para o futuro do planeta, 
+            pois eles agitam a sociedade, educam as pessoas e pressionam por mudanças
+            significativas nas políticas públicas, nas práticas empresariais e no
+            comportamento das pessoas. A seguir, serão apresentados algumas das razões
+            pelas quais esses movimentos são extremamente importantes: </p>
+        <ul>
+          <li>Preservação da Biodiversidade;</li>
+          <li>Recuperação de áreas degradadas;</li>
+          <li>Apoio à Justiça Ambiental;</li>
+          <li>Inovação e Soluções Tecnológicas;</li>
+          <li>Promoção de Consumo Sustentável;</li>
+          <li>Combate às mudanças Climáticas.</li>
+        </ul>
+        <p>Essas são apenas algumas das razões pelas quais os movimentos ecológicos são
+            tão importantes para o futuro do planeta. Eles desempenham um papel fundamental
+            na conscientização, na mobilização e na promoção de mudanças necessárias para
+            garantir um futuro sustentável para as próximas gerações.</p>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+        <p>© 2025 UniVerde | Desenvolvido por Felipe Lana Santos RA: R217043 | Gustavo Lisboa de Jesus RA: H70ADJ0 |
+            Igor da Conceição RA: H745179 | Petherson Andrey Sabino RA: R269HE5 | Ruan Bouças Cacovichi RA: R664244 |
+        </p>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const menuToggle = document.getElementById("menuToggle");
+      const menuLateral = document.getElementById("menuLateral");
+      const menuOverlay = document.getElementById("menuOverlay");
+
+      menuToggle.addEventListener("click", function () {
+        this.classList.toggle("aberto");
+        menuLateral.classList.toggle("aberto");
+        menuOverlay.classList.toggle("visivel");
+      });
+
+      menuOverlay.addEventListener("click", function () {
+        menuToggle.classList.remove("aberto");
+        menuLateral.classList.remove("aberto");
+        this.classList.remove("visivel");
+      });
+
+      const menuLinks = document.querySelectorAll(".menu-link");
+      menuLinks.forEach((link) => {
+        link.addEventListener("click", function () {
+          menuToggle.classList.remove("aberto");
+          menuLateral.classList.remove("aberto");
+          menuOverlay.classList.remove("visivel");
+        });
+      });
+    });
+  </script>
+</body>
+</html>

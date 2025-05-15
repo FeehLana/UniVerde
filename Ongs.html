@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONGs - UniVerde</title>
+    <!-- CSS do menu lateral -->
+    <style>
+        .menu-lateral {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            overflow-y: auto;
+            background: #010208;
+            z-index: 1000;
+            transition: all 0.4s ease;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-lateral.aberto {
+            right: 0;
+        }
+
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            cursor: pointer;
+            background: #2dc603;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: #18ba02;
+            transform: scale(1.05);
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 4px 0;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle.aberto span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .menu-toggle.aberto span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.aberto span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        .menu-conteudo {
+            padding: 80px 20px 20px;
+            height: 100%;
+        }
+
+        .menu-lista {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            margin-bottom: 10px;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .menu-link:hover, .menu-link.ativo {
+            background: #2dc603;
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .menu-link i {
+            margin-right: 15px;
+            font-size: 1.3rem;
+            width: 25px;
+            text-align: center;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .menu-overlay.visivel {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        @media (max-width: 768px) {
+            .menu-lateral {
+                width: 250px;
+                right: -250px;
+            }
+        }
+    </style>
+    <!-- CSS da página principal -->
+    <style>
+        :root {
+            --verde-primario: #33CC33;
+            --verde-escuro: #2E7D32;
+            --verde-hover: #388E3C;
+            --verde-claro: #33CC33;
+            --verde-agua: #E8F5E9;
+            --cinza-borda: #e0e0e0;
+            --sombra: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #333;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background: var(--verde-primario);
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: var(--sombra);
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        
+        main {
+            flex: 1;
+            max-width: 1100px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--sombra);
+            width: 90%;
+        }
+
+        /* ESTILOS ESPECÍFICOS DA PÁGINA ONGs */
+        .lista-ongs {
+            list-style: none;
+            padding: 0;
+        }
+
+        .ong-container {
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--cinza-borda);
+        }
+
+        .ong-logo {
+            width: 120px;
+            height: auto;
+            border-radius: 8px;
+            object-fit: contain;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .ong-content {
+            flex: 1;
+        }
+
+        .sobre-ongs {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .sobre-ongs-header {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .destaque-verde {
+            width: 60px;
+            height: 4px;
+            background: var(--verde-primario);
+            margin-top: 0.5rem;
+            border-radius: 2px;
+        }
+
+        .ong-card {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--verde-primario);
+            margin-bottom: 2rem;
+        }
+
+        .destaque-texto {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .ong-info-box {
+            background: white;
+            padding: 1.2rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid var(--cinza-borda);
+        }
+
+        .lista-destaque {
+            list-style: none;
+            padding: 0;
+            margin-top: 1rem;
+        }
+
+        .lista-destaque li {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .icone {
+            font-size: 1.2rem;
+        }
+
+        .areas-atuacao {
+            margin-top: 2rem;
+        }
+
+        .titulo-areas {
+            color: var(--verde-primario);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+
+        .areas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .area-item {
+            text-align: center;
+            padding: 1.2rem;
+            background: #f0f8f0;
+            border-radius: 8px;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .area-item:hover {
+            transform: translateY(-5px);
+            background: #e8f5e9;
+        }
+
+        .area-icone {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--verde-primario);
+        }
+
+        .btn-ong, button {
+            background-color: var(--verde-escuro);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-ong:hover, button:hover {
+            background-color: var(--verde-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-ong::after {
+            content: '→';
+            font-size: 1.2rem;
+        }
+
+        section h2 {
+            color: var(--verde-primario);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* RESPONSIVIDADE */
+        @media (max-width: 768px) {
+            main {
+                padding: 1.5rem;
+                width: 95%;
+                margin: 1rem auto;
+            }
+
+            section h2 {
+                font-size: 1.5rem;
+            }
+
+            .ong-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .ong-logo {
+                width: 100px;
+                margin: 0 auto 1rem;
+            }
+
+            .areas-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .ong-card {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .areas-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--verde-primario);
+            color: white;
+            margin-top: auto;
+        }
+    </style>
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Cabeçalho sem menu -->
+    <header>
+        <img src="UniVerde Logo PáginasB.png" alt="Univerde Logo Inicial" class="logo" />
+    </header>
+
+    <!-- Botão do menu lateral -->
+    <div class="menu-toggle" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Overlay do menu -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Menu Lateral -->
+    <nav class="menu-lateral" id="menuLateral">
+        <div class="menu-conteudo">
+            <ul class="menu-lista">
+                <li class="menu-item">
+                    <a href="index.html" class="menu-link">
+                        <i class="fas fa-home"></i> Início
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Videos.html" class="menu-link">
+                        <i class="fas fa-video"></i> Vídeos
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Educacao.html" class="menu-link">
+                        <i class="fas fa-book"></i> Conteúdos Educativos
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Pontos.html" class="menu-link">
+                        <i class="fas fa-map-marker-alt"></i> Pontos de Coleta
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Ongs.html" class="menu-link ativo">
+                        <i class="fas fa-hands-helping"></i> ONGs
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Materiais.html" class="menu-link">
+                        <i class="fas fa-recycle"></i> Materiais Recicláveis
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="residuos-comuns.html" class="menu-link">
+                        <i class="fas fa-trash-alt"></i> Resíduos Comuns
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="residuos-especiais.html" class="menu-link">
+                        <i class="fas fa-biohazard"></i> Resíduos Especiais
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Como Reutilizar Materiais.html" class="menu-link">
+                        <i class="fas fa-lightbulb"></i> Como Reutilizar
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Calculadora.html" class="menu-link">
+                        <i class="fas fa-calculator"></i> Calculadora
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Noticias.html" class="menu-link">
+                        <i class="fas fa-newspaper"></i> Notícias sobre Sustentabilidade
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Perguntas.html" class="menu-link">
+                        <i class="fas fa-question-circle"></i> Perguntas Frequentes
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Conteúdo principal -->
+    <main>
+        <section class="sobre-ongs">
+            <div class="sobre-ongs-header">
+                <h2>O que são ONGs ambientais?</h2>
+                <div class="destaque-verde"></div>
+            </div>
+            <div class="sobre-ongs-content">
+                <div class="ong-card">
+                    <p class="destaque-texto">As Organizações Não Governamentais (ONGs) são grupos que realizam trabalho social de forma coletiva, defendendo e aprimorando causas específicas para atender necessidades da sociedade como um todo.</p>
+                    <div class="ong-info-box">
+                        <p>Com o reconhecimento de que o Estado muitas vezes não é capaz ou não tem interesse em defender certas causas, as ONGs surgem como alternativa da sociedade civil para apoiar:</p>
+                        <ul class="lista-destaque">
+                            <li><span class="icone">🌱</span> Pessoas e comunidades</li>
+                            <li><span class="icone">🐾</span> Animais e meio ambiente</li>
+                            <li><span class="icone">🤝</span> Causas culturais e sociais</li>
+                        </ul>
+                    </div>
+                    <p>Essas organizações são compostas por indivíduos autônomos que unem recursos voluntariamente, financiando-se através de doações e parcerias.</p>
+                </div>
+                <div class="areas-atuacao">
+                    <h3 class="titulo-areas">Principais áreas de atuação:</h3>
+                    <div class="areas-grid">
+                        <div class="area-item">
+                            <div class="area-icone">🏥</div>
+                            <p>Assistência Social</p>
+                        </div>
+                        <div class="area-item">
+                            <div class="area-icone">📚</div>
+                            <p>Educação</p>
+                        </div>
+                        <div class="area-item">
+                            <div class="area-icone">💊</div>
+                            <p>Saúde</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="sobre-ongs">
+            <div class="sobre-ongs-header">
+                <h2>A importância das ONGs ambientais</h2>
+                <div class="destaque-verde"></div>
+            </div>
+            <div class="ong-card">
+                <p class="destaque-texto">As ONGs ambientais são essenciais na proteção do meio ambiente, atuando com campanhas, projetos de preservação, denúncias e parcerias com diversos setores. Elas estão na linha de frente em crises ambientais e cobram atitudes sustentáveis de governos e empresas.</p>
+                <div class="ong-info-box">
+                    <p>Principais ações das ONGs ambientais:</p>
+                    <ul class="lista-destaque">
+                        <li><span class="icone">📢</span> Campanhas de conscientização</li>
+                        <li><span class="icone">🌳</span> Projetos de preservação</li>
+                        <li><span class="icone">👮</span> Fiscalização de crimes ambientais</li>
+                    </ul>
+                </div>
+                <p>Atuando em parceria com sociedade civil, empresas e governo, essas organizações são cruciais na conservação da natureza, atuando na linha de frente em situações de risco e pressionando por práticas sustentáveis.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Principais ONGs do Brasil</h2>
+            <ul class="lista-ongs">
+                <li>
+                    <div class="ong-container">
+                        <img src="IPE.png" alt="Logo IPE - Instituto de Pesquisas Ecológicas" class="ong-logo">
+                        <div class="ong-content">
+                            <h3>IPE – Instituto de Pesquisas Ecológicas</h3>
+                            <p>Atua na proteção da biodiversidade brasileira com pesquisa científica e inovação socioambiental. Mantém a <strong>ESCAS</strong> (Escola Superior de Conservação Ambiental e Sustentabilidade), que forma líderes em sustentabilidade através de cursos especializados.</p>
+                            <a href="https://www.ipe.org.br" target="_blank" class="btn-ong">Visite o site</a>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="ong-container">
+                        <img src="AMAZONIA.png" alt="Logo SOS Amazônia" class="ong-logo">
+                        <div class="ong-content">
+                            <h3>SOS Amazônia</h3>
+                            <p>Criada nos anos 1980 para proteger seringueiros e combater o desmatamento. Atua em três frentes: <strong>áreas protegidas, políticas públicas e educação ambiental</strong>. Desenvolve projetos ativos de conservação na região amazônica.</p>
+                            <a href="https://sosamazonia.org.br" target="_blank" class="btn-ong">Visite o site</a>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="ong-container">
+                        <img src="ISA.png" alt="Logo Instituto Socioambiental" class="ong-logo">
+                        <div class="ong-content">
+                            <h3>Instituto Socioambiental (ISA)</h3>
+                            <p>Organização pioneira (desde 1994) que integra questões sociais e ambientais. Atua com <strong>pesquisa, monitoramento de políticas públicas e desenvolvimento de modelos sustentáveis</strong>, especialmente em territórios indígenas e comunidades tradicionais.</p>
+                            <a href="https://www.socioambiental.org" target="_blank" class="btn-ong">Visite o site</a>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="ong-container">
+                        <img src="BOTICARIO.png" alt="Logo Fundação Grupo Boticário" class="ong-logo">
+                        <div class="ong-content">
+                            <h3>Fundação Grupo Boticário</h3>
+                            <p>Desde 1990, protege a natureza através de <strong>reservas naturais, editais de financiamento e projetos como Estação Natureza</strong>. Oferece oportunidades de voluntariado e promove gastronomia responsável.</p>
+                            <a href="https://www.fundacaogrupoboticario.org.br" target="_blank" class="btn-ong">Visite o site</a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 UniVerde | Desenvolvido por Felipe Lana Santos RA: R217043 | Gustavo Lisboa de Jesus RA: H70ADJ0 |
+            Igor da Conceição RA: H745179 | Petherson Andrey Sabino RA: R269HE5 | Ruan Bouças Cacovichi RA: R664244 |
+        </p>
+    </footer>
+
+    <!-- JavaScript para controle do menu -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const menuLateral = document.getElementById('menuLateral');
+            const menuOverlay = document.getElementById('menuOverlay');
+            
+            menuToggle.addEventListener('click', function() {
+                this.classList.toggle('aberto');
+                menuLateral.classList.toggle('aberto');
+                menuOverlay.classList.toggle('visivel');
+            });
+            
+            menuOverlay.addEventListener('click', function() {
+                menuToggle.classList.remove('aberto');
+                menuLateral.classList.remove('aberto');
+                this.classList.remove('visivel');
+            });
+            
+            const menuLinks = document.querySelectorAll('.menu-link');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    menuToggle.classList.remove('aberto');
+                    menuLateral.classList.remove('aberto');
+                    menuOverlay.classList.remove('visivel');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

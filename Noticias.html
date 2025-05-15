@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniVerde - Notícias sobre Sustentabilidade</title>
+    <style>
+        /* Estilos do Menu Lateral */
+        .menu-lateral {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            overflow-y: auto;
+            background: #010208;
+            z-index: 1000;
+            transition: all 0.4s ease;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-lateral.aberto {
+            right: 0;
+        }
+
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            cursor: pointer;
+            background: #2dc603;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: #18ba02;
+            transform: scale(1.05);
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 4px 0;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle.aberto span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .menu-toggle.aberto span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.aberto span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        .menu-conteudo {
+            padding: 80px 20px 20px;
+            height: 100%;
+        }
+
+        .menu-lista {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            margin-bottom: 10px;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .menu-link:hover, .menu-link.ativo {
+            background: #2dc603;
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .menu-link i {
+            margin-right: 15px;
+            font-size: 1.3rem;
+            width: 25px;
+            text-align: center;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .menu-overlay.visivel {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Estilos da Página */
+        body {
+            background-color: #fff;
+            color: #333;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: white;
+            color: #333;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            color: #2dc603;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        section {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            color: #2dc603;
+            border-bottom: 2px solid #2dc603;
+            padding-bottom: 10px;
+        }
+
+        article {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        article:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(45, 198, 3, 0.3);
+        }
+
+        article img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        a[link] {
+      display: inline-block;
+      background-color: #2dc603;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 4px;
+      text-decoration: none;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+
+    a[link]:hover {
+      background-color: #18ba02;
+      transform: translateY(-2px);
+    }
+
+        footer {
+            background-color: #33CC33;
+            color: whitesmoke;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <img src="UniVerde Logo Páginas.png" alt="UniVerde Logo Páginas" class="logo" />
+    </header>
+
+    <!-- Menu Lateral -->
+    <div class="menu-toggle" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <nav class="menu-lateral" id="menuLateral">
+        <div class="menu-conteudo">
+            <ul class="menu-lista">
+                <li class="menu-item">
+                    <a href="index.html" class="menu-link">
+                        <i class="fas fa-home"></i> Início
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Videos.html" class="menu-link">
+                        <i class="fas fa-video"></i> Vídeos
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Educacao.html" class="menu-link">
+                        <i class="fas fa-book"></i> Conteúdos Educativos
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Pontos.html" class="menu-link">
+                        <i class="fas fa-map-marker-alt"></i> Pontos de Coleta
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Ongs.html" class="menu-link">
+                        <i class="fas fa-hands-helping"></i> ONGs
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Materiais.html" class="menu-link">
+                        <i class="fas fa-recycle"></i> Materiais Recicláveis
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="residuos-comuns.html" class="menu-link">
+                        <i class="fas fa-trash-alt"></i> Resíduos Comuns
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="residuos-especiais.html" class="menu-link">
+                        <i class="fas fa-biohazard"></i> Resíduos Especiais
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Como Reutilizar Materiais.html" class="menu-link">
+                        <i class="fas fa-lightbulb"></i> Como Reutilizar
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Calculadora.html" class="menu-link">
+                        <i class="fas fa-calculator"></i> Calculadora
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Noticias.html" class="menu-link ativo">
+                        <i class="fas fa-newspaper"></i> Notícias sobre Sustentabilidade
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="Perguntas.html" class="menu-link">
+                        <i class="fas fa-question-circle"></i> Perguntas Frequentes
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section>
+            <h2><i class="fas fa-newspaper"></i> Notícias sobre Sustentabilidade</h2>
+
+            <!-- Notícias -->
+            <article>
+                <img src="Reportagem1.jpg" alt="Carcinicultura e seus desafios para sustentabilidade em áreas estuarinas no Nordeste">
+                <h3>Carcinicultura e seus desafios para sustentabilidade em áreas estuarinas no Nordeste</h3>
+                <p>A carcinicultura é a criação de camarões em ambientes controlados para fins comerciais, 
+                    constituindo um segmento da aquicultura voltado para...</p>
+                    <a href="https://www.conjur.com.br/2025-mai-03/a-carcinicultura-e-seus-desafios-para-a-sustentabilidade-em-areas-estuarinas-no-nordeste-brasileiro/" link>Matéria Completa</a>
+            </article>
+
+            <article>
+                <img src="Reportagem2.jpg" alt="Frigorífico aposta em sustentabilidade para atrair a geração Z">
+                <h3>Frigorífico aposta em sustentabilidade para atrair a geração Z</h3>
+                <p>Empreendimento investe em produção sustentável, rastreabilidade 
+                    e bem-estar animal, com projeção de crescimento sustentável e legado...</p>
+                    <a href="https://www.terra.com.br/noticias/frigorifico-aposta-em-sustentabilidade-para-atrair-a-geracao-z,3cf24a16a73527044d8b6492f0c48bc545t81sts.html" link>Matéria Completa</a>
+            </article>
+        
+        <article>
+            <img src="Reportagem3.jpg" alt="Cacau promove a sustentabilidade e a diversificação agrícola em SP">
+            <h3>Cacau promove a sustentabilidade e a diversificação agrícola em SP</h3>
+            <p>Programa Cacau SP oferece suporte aos produtores interessados 
+                no cultivo do fruto, com informações sobre produção e modelos de plantio...</p>
+                <a href="https://www.canalrural.com.br/agricultura/cacau-promove-a-sustentabilidade-e-a-diversificacao-agricola-em-sp/" link>Matéria Completa</a>
+        </article>
+
+        <article>
+            <img src="Reportagem4.jpg" alt="Com práticas de vida no campo, agrofloresta une música, educação e sustentabilidade no interior de SP: 'Resposta da terra', diz frequentador">
+            <h3>Com práticas de vida no campo, agrofloresta une música, educação e sustentabilidade 
+                no interior de SP: 'Resposta da terra', diz frequentador</h3>
+            <p>Propriedade criada como alternativa para gerar renda na zona rural de Guapiaçu (SP) 
+                une cultivo agroecológico, arte e sustentabilidade.</p>
+                <a href="https://g1.globo.com/sp/sao-jose-do-rio-preto-aracatuba/noticia/2025/04/28/com-praticas-de-vida-no-campo-agrofloresta-une-musica-educacao-e-sustentabilidade-no-interior-de-sp-resposta-da-terra-diz-frequentador.ghtml" link>Matéria Completa</a>
+        </article>
+
+        <article>
+            <img src="Reportagem5.jpeg" alt="Mulheres na Ciência: Evento do IPA traz pesquisas inéditas para o futuro do meio ambiente">
+            <h3>Mulheres na Ciência: Evento do IPA traz pesquisas inéditas para o futuro do meio ambiente</h3>
+            <p>Pesquisadoras e líderes debatem inovações e desafios para a sustentabilidade ambiental em 
+                São Paulo. São Paulo, 27 de março de 2025...</p>
+                <a href="https://semil.sp.gov.br/2025/03/mulheres-na-ciencia-evento-promovido-pelo-ipa-traz-pesquisas-ineditas-para-o-futuro-da-sustentabilidade-ambiental/" link>Matéria Completa</a>
+        </article>
+
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 UniVerde | Desenvolvido por Felipe Lana Santos RA: R217043 | Gustavo Lisboa de Jesus RA: H70ADJ0 |
+            Igor da Conceição RA: H745179 | Petherson Andrey Sabino RA: R269HE5 | Ruan Bouças Cacovichi RA: R664244 |
+        </p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const menuLateral = document.getElementById('menuLateral');
+            const menuOverlay = document.getElementById('menuOverlay');
+            
+            menuToggle.addEventListener('click', function() {
+                this.classList.toggle('aberto');
+                menuLateral.classList.toggle('aberto');
+                menuOverlay.classList.toggle('visivel');
+            });
+            
+            menuOverlay.addEventListener('click', function() {
+                menuToggle.classList.remove('aberto');
+                menuLateral.classList.remove('aberto');
+                this.classList.remove('visivel');
+            });
+            
+            const menuLinks = document.querySelectorAll('.menu-link');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    menuToggle.classList.remove('aberto');
+                    menuLateral.classList.remove('aberto');
+                    menuOverlay.classList.remove('visivel');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
